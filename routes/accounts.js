@@ -31,14 +31,22 @@ router.get('/:id', async (req, res) => {
 //
 //Post
 router.post('/', async (req, res) => {
-    let inserted = await db('accounts').insert(({ name, budget } = req.body));
-    if (!inserted || inserted == null) {
-        res.status(500).json({ error: 'Failed to save account' });
+    console.log('Req Body: ', req.body);
+    try {
+        let inserted = await db('accounts').insert({
+            name: req.body.name,
+            budget: req.body.budget,
+        });
+        if (!inserted || inserted == null) {
+            res.status(500).json({ error: 'Failed to save account' });
+        }
+        res.status(200).json({
+            message: 'Successfully saved account',
+            account: inserted,
+        });
+    } catch (err) {
+        res.status(500).json(err);
     }
-    res.status(200).json({
-        message: 'Successfully saved account',
-        account: inserted,
-    });
 });
 
 //
