@@ -4,12 +4,26 @@ const db = require('../data/dbConfig');
 //
 //Get
 router.get('/', async (req, res) => {
-    let accounts = await db.select().table('accounts');
-    if (!accounts || accounts == null) {
-        res.status(500).json({ error: 'There was an error' });
+    try {
+        let limit = req.query.limit || 10;
+        let sortdir = req.query.sortdir || 'asc';
+        let sortby = req.query.sortby || 'id';
+
+        let accounts = await db
+            .select()
+            .table('accounts')
+            .orderBy(sortby, sortdir)
+            .limit(limit);
+
+        if (!accounts || accounts == null) {
+            res.status(500).json({ error: 'There was an error' });
+        }
+
+        console.log(accounts);
+        res.json(accounts);
+    } catch (err) {
+        res.status(500).json(err);
     }
-    console.log(accounts);
-    res.json(accounts);
 });
 
 //
